@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DevisPage extends StatefulWidget {
   @override
@@ -8,7 +8,8 @@ class DevisPage extends StatefulWidget {
 
 class _DevisPageState extends State<DevisPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
 
@@ -34,6 +35,42 @@ class _DevisPageState extends State<DevisPage> {
     'Logiciel sur mesure'
   ];
 
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Create the data to send to Firestore
+      final data = {
+        'lastname': _lastNameController.text,
+        'firstname': _firstNameController.text,
+        'email': _emailController.text,
+        'offer': _selectedPrestation,
+        'content': _detailsController.text,
+      };
+
+      try {
+        // Send data to Firestore
+        await FirebaseFirestore.instance.collection('devis').add(data);
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Devis envoyé!')),
+        );
+
+        // Clear the form fields
+        _formKey.currentState!.reset();
+        setState(() {
+          _selectedPrestation = null;
+        });
+      } catch (e) {
+        // Show an error message if something goes wrong
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Erreur lors de l\'envoi du devis. Veuillez réessayer.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +84,21 @@ class _DevisPageState extends State<DevisPage> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _nameController,
+                controller: _firstNameController,
+                decoration: InputDecoration(
+                  labelText: 'Prénom',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez entrer votre prénom';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _lastNameController,
                 decoration: InputDecoration(
                   labelText: 'Nom',
                   border: OutlineInputBorder(),
@@ -117,13 +168,7 @@ class _DevisPageState extends State<DevisPage> {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Devis envoyé!')),
-                    );
-                  }
-                },
+                onPressed: _submitForm,
                 child: Text('Envoyer'),
               ),
             ],

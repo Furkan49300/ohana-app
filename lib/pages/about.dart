@@ -21,9 +21,9 @@ class AboutPage extends StatelessWidget {
                 image: AssetImage('assets/images/logo.png'),
                 width: 90,
               ),
-              const Text("A propos de Ohana Entreprise",
+              const Text("A propos de OHana Entreprise",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-              const Text("Expert en dévelopement et cybersécurité"),
+              const Text("Expert en développement et cybersécurité"),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 10),
                 height: 2,

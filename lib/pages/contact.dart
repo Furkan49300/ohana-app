@@ -1,9 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ohana_app/main.dart';
 
-class ContactPage extends StatelessWidget {
+class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
+
+  @override
+  _ContactPageState createState() => _ContactPageState();
+}
+
+class _ContactPageState extends State<ContactPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Create the data to send to Firestore
+      final data = {
+        'lastname': _lastNameController.text,
+        'firstname': _firstNameController.text,
+        'email': _emailController.text,
+        'subject': _subjectController.text,
+        'content': _contentController.text,
+      };
+
+      try {
+        // Send data to Firestore
+        await FirebaseFirestore.instance.collection('messagerie').add(data);
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Message envoyé!')),
+        );
+
+        // Clear the form fields
+        _formKey.currentState!.reset();
+      } catch (e) {
+        // Show an error message if something goes wrong
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Erreur lors de l\'envoi du message. Veuillez réessayer.')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,38 +77,83 @@ class ContactPage extends StatelessWidget {
                 color: Color(0xffb500b9),
               ),
               Form(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: ("Nom complet")),
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: ("Adresse mail")),
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(), labelText: ("Objet")),
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    minLines: 5,
-                    maxLines: 6,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: ("Message"),
-                        alignLabelWithHint: true),
-                  ),
-                  SizedBox(height: 10),
-                  ElevatedButton(onPressed: () {}, child: Text("Envoyer"))
-                ],
-              )),
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _firstNameController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: ("Prénom")),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre prénom';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _lastNameController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: ("Nom")),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre nom';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: ("Adresse mail")),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre adresse mail';
+                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                            .hasMatch(value)) {
+                          return 'Veuillez entrer une adresse mail valide';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _subjectController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: ("Objet")),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer l\'objet de votre message';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: _contentController,
+                      minLines: 5,
+                      maxLines: 6,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: ("Message"),
+                          alignLabelWithHint: true),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre message';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                        onPressed: _submitForm, child: Text("Envoyer"))
+                  ],
+                ),
+              ),
               SizedBox(height: 50),
               ClipRRect(
                   borderRadius: BorderRadius.circular(20),

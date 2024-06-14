@@ -1,14 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ohana_app/firebase_options.dart';
 import 'package:ohana_app/pages/about.dart';
 import 'package:ohana_app/pages/accueil.dart';
-import 'package:ohana_app/pages/article_page.dart';
+import 'package:ohana_app/pages/article_detail_page.dart'; // Import de la nouvelle page de détails de l'article
 import 'package:ohana_app/pages/contact.dart';
 import 'package:ohana_app/pages/devis_page.dart';
 import 'package:ohana_app/pages/expertises/pricing.dart';
 import 'package:ohana_app/pages/expertises/web_pricing_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 
@@ -16,7 +22,11 @@ final _router = GoRouter(
   routes: [
     GoRoute(path: "/", builder: (_, __) => AccueilPage(), routes: [
       GoRoute(path: "contact", builder: (_, __) => ContactPage()),
-      GoRoute(path: "article", builder: (_, __) => ArticlePage()),
+      GoRoute(
+          path: "article/:id",
+          builder: (_, state) => ArticleDetailPage(
+              id: state.pathParameters[
+                  'id']!)), // Nouvelle route pour la page de détails de l'article
       GoRoute(path: "about", builder: (_, __) => AboutPage(), routes: [
         GoRoute(path: "contact", builder: (_, __) => ContactPage()),
       ]),
@@ -63,7 +73,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text("Ohana"),
+      title: const Text("OHana"),
       centerTitle: true,
       actions: <Widget>[
         IconButton(
