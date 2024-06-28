@@ -15,7 +15,46 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MainApp());
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(Color(0x80b500b9)),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            shape: MaterialStateProperty.all<OutlinedBorder>(
+              const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.black),
+              ),
+            ),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+              Color.fromARGB(255, 255, 255, 255),
+            ),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            shape: MaterialStateProperty.all<OutlinedBorder>(
+              const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.black),
+              ),
+            ),
+          ),
+        ),
+      ),
+      debugShowCheckedModeBanner: false, // Ajoutez cette ligne
+      home: const WelcomePage(),
+    );
+  }
 }
 
 final _router = GoRouter(
@@ -23,17 +62,18 @@ final _router = GoRouter(
     GoRoute(path: "/", builder: (_, __) => AccueilPage(), routes: [
       GoRoute(path: "contact", builder: (_, __) => ContactPage()),
       GoRoute(
-          path: "article/:id",
-          builder: (_, state) => ArticleDetailPage(
-              id: state.pathParameters[
-                  'id']!)), // Nouvelle route pour la page de détails de l'article
+        path: "article/:id",
+        builder: (_, state) => ArticleDetailPage(
+          id: state.pathParameters['id']!,
+        ),
+      ), // Nouvelle route pour la page de détails de l'article
       GoRoute(path: "about", builder: (_, __) => AboutPage(), routes: [
         GoRoute(path: "contact", builder: (_, __) => ContactPage()),
       ]),
       GoRoute(path: "expertise", builder: (_, __) => PricingPage(), routes: [
         GoRoute(path: "devis", builder: (_, __) => DevisPage()),
       ]),
-    ])
+    ]),
   ],
 );
 
@@ -43,26 +83,51 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      theme: ThemeData(
-          textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0x80b500b9)),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                      const RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.black))))),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      Color.fromARGB(255, 255, 255, 255)),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.black),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                      const RoundedRectangleBorder(side: BorderSide(color: Colors.black)))))),
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // Ajoutez cette ligne
       routerConfig: _router,
+    );
+  }
+}
+
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({Key? key}) : super(key: key);
+
+  @override
+  _WelcomePageState createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainApp()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+                height: 150,
+                width: 150,
+                child: Image(image: AssetImage('assets/images/logo.png'))),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
+                'Bienvenue chez OHana !',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

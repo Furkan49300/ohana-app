@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:ohana_app/main.dart';
 
 class ContactPage extends StatefulWidget {
@@ -26,6 +26,7 @@ class _ContactPageState extends State<ContactPage> {
         'email': _emailController.text,
         'subject': _subjectController.text,
         'content': _contentController.text,
+        'date_sent': Timestamp.now(),
       };
 
       try {
@@ -208,7 +209,7 @@ class _ContactPageState extends State<ContactPage> {
                       width: MediaQuery.of(context).size.width / 3,
                       color: Color(0xffb500b9),
                     ),
-                    Text("15 rue des Peupliers \n49000 Angers \nFrance"),
+                    Text("16 rue du Maine \n49100 Angers \nFrance"),
                   ],
                 ),
               )
