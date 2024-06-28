@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ohana_app/firebase_options.dart';
 import 'package:ohana_app/pages/about.dart';
 import 'package:ohana_app/pages/accueil.dart';
-import 'package:ohana_app/pages/article_detail_page.dart'; // Import de la nouvelle page de détails de l'article
+import 'package:ohana_app/pages/article_detail_page.dart';
 import 'package:ohana_app/pages/contact.dart';
 import 'package:ohana_app/pages/devis_page.dart';
 import 'package:ohana_app/pages/expertises/pricing.dart';
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      debugShowCheckedModeBanner: false, // Ajoutez cette ligne
+      debugShowCheckedModeBanner: false, 
       home: const WelcomePage(),
     );
   }
@@ -66,7 +66,7 @@ final _router = GoRouter(
         builder: (_, state) => ArticleDetailPage(
           id: state.pathParameters['id']!,
         ),
-      ), // Nouvelle route pour la page de détails de l'article
+      ), 
       GoRoute(path: "about", builder: (_, __) => AboutPage(), routes: [
         GoRoute(path: "contact", builder: (_, __) => ContactPage()),
       ]),
@@ -83,7 +83,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false, // Ajoutez cette ligne
+      debugShowCheckedModeBanner: false, 
       routerConfig: _router,
     );
   }
